@@ -1,0 +1,33 @@
+{
+  "name": "birthdaybot",
+  "version": "1.0.0",
+  "description": "A small Discord Bot to help automate the Birthday Role on Dr1fterX's Discord",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TwilightZebby/BirthdayBot.git"
+  },
+  "keywords": [
+    "discord",
+    "discord-bot",
+    "discordjs",
+    "nodejs"
+  ],
+  "author": "TwilightZebby",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TwilightZebby/BirthdayBot/issues"
+  },
+  "homepage": "https://github.com/TwilightZebby/BirthdayBot#readme",
+  "dependencies": {
+    "bufferutil": "^4.0.3",
+    "discord.js": "^12.5.1",
+    "erlpack": "github:discord/erlpack",
+    "libsodium-wrappers": "^0.7.8",
+    "utf-8-validate": "^5.0.4",
+    "zlib-sync": "^0.1.7"
+  }
+}
