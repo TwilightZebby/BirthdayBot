@@ -55,7 +55,8 @@ module.exports = {
         if ( args.length === 1 )
         {
             await client.application.commands.create(await slashCommand.registerData())
-            .then(async () => { return await message.reply({ content: `Successfully registered that Slash Command!`, allowedMentions: { parse: [], repliedUser: false } }) });
+            .then(async () => { return await message.reply({ content: `Successfully registered that Slash Command!`, allowedMentions: { parse: [], repliedUser: false } }) })
+            .catch(async (err) => { return await message.reply({ content: `Sorry, but there was an error while attempting to register that Slash Command.`, allowedMentions: { parse: [], repliedUser: false } }); })
         }
         else
         {
@@ -67,6 +68,8 @@ module.exports = {
             await client.application.commands.create(await slashCommand.registerData(), guildID)
             .then(async () => { return await message.reply({ content: `Successfully registered that Slash Command to the **${testGuild.name}** Server!`, allowedMentions: { parse: [], repliedUser: false } }) });
         }
+
+        return;
 
     }
 }
