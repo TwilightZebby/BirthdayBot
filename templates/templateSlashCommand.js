@@ -1,42 +1,47 @@
-// LIBRARY IMPORTS
-const fs = require('fs');
-const Discord = require("discord.js");
-
-// MODULE IMPORTS
-//const ErrorModule = require('../bot_modules/errorLogger.js');
-const SlashCommands = require('../bot_modules/slashModule.js');
-
-// VARIABLE IMPORTS
+const Discord = require('discord.js');
 const { client } = require('../constants.js');
-const { PREFIX } = require('../config.js');
 
 
-
-// THIS COMMAND
 module.exports = {
-    name: '',
-    description: '',
-
-    // LIMITATIONS
-    //     'twilightzebby' - Only TwilightZebby#1955 can use this command
-    //     If commented out, everyone can use this command
-    //limitation: 'twilightzebby',
-
-    // Command's cooldown, in seconds
+    name: 'commandName',
+    description: `A Description of the command`,
+    
+    // Cooldown is in seconds
     cooldown: 3,
 
+    // Uncomment for making the command only usable in DMs with the Bot
+    //    - DO NOT have both this AND "guildOnly" uncommented, only one or neither
+    //dmOnly: true,
+
+    // Uncomment for making the command only usable in Servers
+    //   - DO NOT have both this AND "dmOnly" uncommented, only one or neither
+    //guildOnly: true,
+
+
     /**
-     * Command's functionality
+     * Returns data to be used for registering the Slash Command
      * 
-     * @param {Discord.Guild} guild 
-     * @param {*} data
-     * @param {*} commandData
-     * @param {Discord.GuildMember} member
+     * @returns {Discord.ApplicationCommandData} 
      */
-    async execute(guild, data, commandData, member) {
+    async registerData() {
 
-      //.
+        const data = {};
+        data.name = this.name;
+        data.description = this.description;
 
-      // END OF SLASH COMMAND
+        return data;
+
+    },
+
+
+    /**
+     * Entry point that runs the slash command
+     * 
+     * @param {Discord.CommandInteraction} slashInteraction Slash Command Interaction
+     */
+    async execute(slashInteraction) {
+
+        //.
+
     }
-};
+}
