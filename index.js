@@ -240,6 +240,8 @@ client.on('messageCreate', async (message) => {
 // INTERACTION CREATE EVENT (when a Slash Command, Button, Select Menu is used)
 
 const SlashCommandHandler = require('./modules/slashCommandHandler.js');
+const ButtonHandler = require('./modules/buttonHandler.js');
+const SelectMenuHandler = require('./modules/selectMenuHandler.js');
 
 client.on('interactionCreate', async (interaction) => {
 
@@ -251,10 +253,12 @@ client.on('interactionCreate', async (interaction) => {
     else if ( interaction.isButton() )
     {
         // Is a Button Component
+        return await ButtonHandler.Main(interaction);
     }
     else if ( interaction.isSelectMenu() )
     {
         // Is a Select Menu (aka Dropdown)
+        return await SelectMenuHandler.Main(interaction);
     }
     else
     {
