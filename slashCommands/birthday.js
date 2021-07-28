@@ -1,5 +1,8 @@
 const Discord = require('discord.js');
+const fs = require('fs');
 const { client } = require('../constants.js');
+
+const ErrorModule = require('../modules/errorLog.js');
 
 
 module.exports = {
@@ -92,12 +95,68 @@ module.exports = {
         // Birthday Set Sub-Command
         else if ( subCommandName === "set" )
         {
-            return await slashInteraction.reply({ content: `Birthday Set Slash Sub-Command test successful!` });
+            return await this.setBirthday(slashInteraction);
         }
         // Birthday Remove Sub-Command
         else if ( subCommandName === "remove" )
         {
             return await slashInteraction.reply({ content: `Birthday Remove Slash Sub-Command test successful!` });
+        }
+
+    },
+
+
+
+
+    /**
+     * Method for Setting/Editing Birthday
+     * 
+     * @param {Discord.CommandInteraction} slashInteraction Slash Command Interaction
+     */
+    async setBirthday(slashInteraction) {
+
+        // Check if the User doesn't already exist in the JSON
+        let birthdayJSON = require('../hiddenJsonFiles/birthdayDates.json');
+
+        // User doesn't exist, so set (create) in the JSON
+        if ( !birthdayJSON[slashInteraction.user.id] )
+        {
+            let monthValue = parseInt(slashInteraction.options.get("month").value); // 0 for Jan, 11 for Dec
+            let dateValue = parseInt(slashInteraction.options.get("date").value);
+
+
+            // Check Date
+            if ( monthValue === 1 && dateValue === 29 )
+            {
+                let confirmationRow = new Discord.MessageActionRow().addComponents(
+                    new Discord.MessageButton().setCustomId(`${slashInteraction.user.id}_1_29`).setLabel("Confirm").setStyle("PRIMARY"),
+                );
+
+                return await slashInteraction.reply(
+                    { content: `You are about to set your Birthday as February 29th, a date that can only exist during Leap Years. As such, we will give you the Birthday Role on February 28th on other, non-leap years.\n\nPlease confirm if this is ok for you, otherwise you can safely ignore or delete this message.`,
+                    components: [ confirmationRow ],
+                    ephemeral: true
+                });
+            }
+            else
+            {
+                return await slashInteraction.reply({ content: `Month: ${monthValue}, Date: ${dateValue}`, ephemeral: true });
+            }
+
+            /*birthdayJSON[slashInteraction.user.id] = {
+                userID: slashInteraction.user.id,
+                birthMonth: monthValue,
+                birthDate: dateValue
+            };
+
+
+            // Write to JSON file
+            fs.writeFile('./hiddenJsonFiles/birthdayDates.json', JSON.stringify(birthdayJSON, null, 4), async (err) => {
+                if (err)
+                {
+                    return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/birthdayDates.json: `);
+                }
+            });*/
         }
 
     }
