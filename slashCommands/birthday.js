@@ -4,6 +4,9 @@ const { client } = require('../constants.js');
 
 const ErrorModule = require('../modules/errorLog.js');
 
+const Month31Days = [ 0, 2, 4, 6, 7, 9, 11 ];
+const Month30Days = [ 3, 5, 8, 10 ];
+
 
 module.exports = {
     name: 'birthday',
@@ -126,10 +129,25 @@ module.exports = {
 
 
             // Check Date
-            if ( monthValue === 1 && dateValue === 29 )
+            // If a value that doesn't exist (outside the range of 1 - 31, or 1 - 30, depending on the month in question)
+            if ( Month31Days.includes(monthValue) && (dateValue < 1 || dateValue > 31) )
+            {
+                return await slashInteraction.reply({ content: `Sorry, but that wasn't a valid date! (Must be between 1 and 31, inclusive)`, ephemeral: true });
+            }
+            else if ( Month30Days.includes(monthValue) && (dateValue < 1 || dateValue > 30) )
+            {
+                return await slashInteraction.reply({ content: `Sorry, but that wasn't a valid date! (Must be between 1 and 30, inclusive)`, ephemeral: true });
+            }
+            // Catch for Feb 30th (date doesn't exist)
+            else if ( monthValue === 1 && dateValue > 29 )
+            {
+                return await slashInteraction.reply({ content: `Sorry, but that wasn't a valid date! (Must be between 1 and 29, inclusive)`, ephemeral: true });
+            }
+            // Catch for Feb 29th (date can only exist on Leap Years)
+            else if ( monthValue === 1 && dateValue === 29 )
             {
                 let confirmationRow = new Discord.MessageActionRow().addComponents(
-                    new Discord.MessageButton().setCustomId(`${slashInteraction.user.id}_1_29`).setLabel("Confirm").setStyle("PRIMARY"),
+                    new Discord.MessageButton().setCustomId(`feb29_${slashInteraction.user.id}`).setLabel("Confirm").setStyle("PRIMARY"),
                 );
 
                 return await slashInteraction.reply(
