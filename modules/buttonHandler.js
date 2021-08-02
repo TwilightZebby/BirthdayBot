@@ -45,40 +45,20 @@ module.exports = {
             return;
         }
 
-        // User doesn't exist in JSON, add them
-        if ( !birthdayJSON[originalUserID] )
-        {
-            birthdayJSON[originalUserID] = {
-                userID: originalUserID,
-                birthMonth: 1,
-                birthDate: 29
-            };
+        // Set the birthday
+        birthdayJSON[originalUserID] = {
+            userID: originalUserID,
+            birthMonth: 1,
+            birthDate: 29
+        };
 
-            // Write to JSON file
-            fs.writeFile('./hiddenJsonFiles/birthdayDates.json', JSON.stringify(birthdayJSON, null, 4), async (err) => {
-                if (err)
-                {
-                    return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/birthdayDates.json: `);
-                }
-            });
-        }
-        // User *does* already exist, edit
-        else
-        {
-            birthdayJSON[originalUserID] = {
-                userID: originalUserID,
-                birthMonth: 1,
-                birthDate: 29
-            };
-
-            // Write to JSON file
-            fs.writeFile('./hiddenJsonFiles/birthdayDates.json', JSON.stringify(birthdayJSON, null, 4), async (err) => {
-                if (err)
-                {
-                    return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/birthdayDates.json: `);
-                }
-            });
-        }
+        // Write to JSON file
+        fs.writeFile('./hiddenJsonFiles/birthdayDates.json', JSON.stringify(birthdayJSON, null, 4), async (err) => {
+            if (err)
+            {
+                return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/birthdayDates.json: `);
+            }
+        });
 
 
         return await buttonInteraction.update({ content: `✅ Successfully set your Birthday as February 29th!`, components: [] });

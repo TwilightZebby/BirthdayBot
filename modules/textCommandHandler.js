@@ -180,7 +180,7 @@ module.exports = {
             catch (err)
             {
                 await ErrorModule.LogCustom(err, `Execute Text-based Command Failed: `);
-                await message.channel.send({ content: `**${message.author.username}** sorry, but there was a problem trying to run the \`${commandName}\` command.\nPlease let TwilightZebby#1955 know if this error continues to appear for this command!` });
+                await message.channel.send({ content: `**${message.author.username}** sorry, but there was a problem trying to run the \`${commandName}\` command.` });
             }
 
             return;

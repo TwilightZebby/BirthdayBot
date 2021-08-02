@@ -88,12 +88,12 @@ module.exports = {
      */
     async execute(slashInteraction) {
 
-        let subCommandName = slashInteraction.options.getSubCommand(false);
+        let subCommandName = slashInteraction.options.getSubcommand(false);
 
         // Catch for no sub command
-        if ( !subCommandName )
+        if ( !subCommandName || subCommandName === "" )
         {
-            return await slashInteraction.reply({ content: `Please let TwilightZebby#1955 know if you see this error, as it means that I was not able to see the Sub-Command used!`, ephemeral: true });
+            return await slashInteraction.reply({ content: `Error: For some reason, I was not able to see the Sub-Command used...`, ephemeral: true });
         }
         // Birthday Set Sub-Command
         else if ( subCommandName === "set" )
@@ -118,64 +118,63 @@ module.exports = {
      */
     async setBirthday(slashInteraction) {
 
+        // Just in case it takes longer than 3 seconds to do stuff, Defer the response to buy more time (up to 15 minutes)
+        await slashInteraction.defer({ ephemeral: true });
+
         // Check if the User doesn't already exist in the JSON
         let birthdayJSON = require('../hiddenJsonFiles/birthdayDates.json');
 
-        // User doesn't exist, so set (create) in the JSON
-        if ( !birthdayJSON[slashInteraction.user.id] )
+        let monthValue = parseInt(slashInteraction.options.get("month").value); // 0 for Jan, 11 for Dec
+        let dateValue = parseInt(slashInteraction.options.get("date").value);
+
+
+        // Check Date
+        // If a value that doesn't exist (outside the range of 1 - 31, or 1 - 30, depending on the month in question)
+        if ( Month31Days.includes(monthValue) && (dateValue < 1 || dateValue > 31) )
         {
-            let monthValue = parseInt(slashInteraction.options.get("month").value); // 0 for Jan, 11 for Dec
-            let dateValue = parseInt(slashInteraction.options.get("date").value);
-
-
-            // Check Date
-            // If a value that doesn't exist (outside the range of 1 - 31, or 1 - 30, depending on the month in question)
-            if ( Month31Days.includes(monthValue) && (dateValue < 1 || dateValue > 31) )
-            {
-                return await slashInteraction.reply({ content: `Sorry, but that wasn't a valid date! (Must be between 1 and 31, inclusive)`, ephemeral: true });
-            }
-            else if ( Month30Days.includes(monthValue) && (dateValue < 1 || dateValue > 30) )
-            {
-                return await slashInteraction.reply({ content: `Sorry, but that wasn't a valid date! (Must be between 1 and 30, inclusive)`, ephemeral: true });
-            }
-            // Catch for Feb 30th (date doesn't exist)
-            else if ( monthValue === 1 && dateValue > 29 )
-            {
-                return await slashInteraction.reply({ content: `Sorry, but that wasn't a valid date! (Must be between 1 and 29, inclusive)`, ephemeral: true });
-            }
-            // Catch for Feb 29th (date can only exist on Leap Years)
-            else if ( monthValue === 1 && dateValue === 29 )
-            {
-                let confirmationRow = new Discord.MessageActionRow().addComponents(
-                    new Discord.MessageButton().setCustomId(`feb29_${slashInteraction.user.id}`).setLabel("Confirm").setStyle("PRIMARY"),
-                );
-
-                return await slashInteraction.reply(
-                    { content: `You are about to set your Birthday as February 29th, a date that can only exist during Leap Years. As such, we will give you the Birthday Role on February 28th on other, non-leap years.\n\nPlease confirm if this is ok for you, otherwise you can safely ignore or delete this message.`,
-                    components: [ confirmationRow ],
-                    ephemeral: true
-                });
-            }
-            else
-            {
-                return await slashInteraction.reply({ content: `Month: ${monthValue}, Date: ${dateValue}`, ephemeral: true });
-            }
-
-            /*birthdayJSON[slashInteraction.user.id] = {
-                userID: slashInteraction.user.id,
-                birthMonth: monthValue,
-                birthDate: dateValue
-            };
-
-
-            // Write to JSON file
-            fs.writeFile('./hiddenJsonFiles/birthdayDates.json', JSON.stringify(birthdayJSON, null, 4), async (err) => {
-                if (err)
-                {
-                    return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/birthdayDates.json: `);
-                }
-            });*/
+            return await slashInteraction.editReply({ content: `Sorry, but that wasn't a valid date! (Must be between 1 and 31, inclusive)`, ephemeral: true });
         }
+        else if ( Month30Days.includes(monthValue) && (dateValue < 1 || dateValue > 30) )
+        {
+            return await slashInteraction.editReply({ content: `Sorry, but that wasn't a valid date! (Must be between 1 and 30, inclusive)`, ephemeral: true });
+        }
+        // Catch for Feb 30th (date doesn't exist)
+        else if ( monthValue === 1 && dateValue > 29 )
+        {
+            return await slashInteraction.editReply({ content: `Sorry, but that wasn't a valid date! (Must be between 1 and 29, inclusive)`, ephemeral: true });
+        }
+        // Catch for Feb 29th (date can only exist on Leap Years)
+        else if ( monthValue === 1 && dateValue === 29 )
+        {
+            let confirmationRow = new Discord.MessageActionRow().addComponents(
+                new Discord.MessageButton().setCustomId(`feb29_${slashInteraction.user.id}`).setLabel("Confirm").setStyle("PRIMARY"),
+            );
+
+            return await slashInteraction.editReply(
+                { content: `You are about to set your Birthday as February 29th, a date that can only exist during Leap Years. As such, we will give you the Birthday Role on February 28th on other, non-leap years.\n\nPlease confirm if this is ok for you, otherwise you can safely ignore or delete this message.`,
+                components: [ confirmationRow ],
+                ephemeral: true
+            });
+        }
+        else
+        {
+            return await slashInteraction.editReply({ content: `Month: ${monthValue}, Date: ${dateValue}`, ephemeral: true });
+        }
+
+        /*birthdayJSON[slashInteraction.user.id] = {
+            userID: slashInteraction.user.id,
+            birthMonth: monthValue,
+            birthDate: dateValue
+        };
+
+
+        // Write to JSON file
+        fs.writeFile('./hiddenJsonFiles/birthdayDates.json', JSON.stringify(birthdayJSON, null, 4), async (err) => {
+            if (err)
+            {
+                return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/birthdayDates.json: `);
+            }
+        });*/
 
     }
 }
