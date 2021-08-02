@@ -124,6 +124,12 @@ module.exports = {
 
         let birthdayJSON = require('../hiddenJsonFiles/birthdayDates.json');
 
+        // If user doesn't exist in JSON already, then they can't remove a non-existant entry!
+        if ( !birthdayJSON[slashInteraction.user.id] )
+        {
+            return await slashInteraction.editReply({ content: `I don't have a saved birthday for you. As such, I cannot delete a non-existant value!`, ephemeral: true });
+        }
+
         // remove from JSON, then save to file
         delete birthdayJSON[slashInteraction.user.id];
 
