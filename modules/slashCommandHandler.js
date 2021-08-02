@@ -117,7 +117,17 @@ module.exports = {
         catch (err)
         {
             await ErrorModule.LogCustom(err, `Execute Slash Command Failed: `);
-            await slashInteraction.reply({ content: `Sorry, but something went wrong while trying to run that Slash Command.`, ephemeral: true });
+            
+            // Just in case
+            if ( slashInteraction.deferred )
+            {
+                await slashInteraction.editReply({ content: `Sorry, but something went wrong while trying to run that Slash Command.`, ephemeral: true });
+            }
+            else
+            {
+                await slashInteraction.reply({ content: `Sorry, but something went wrong while trying to run that Slash Command.`, ephemeral: true });
+            }
+            
         }
 
         return;

@@ -56,6 +56,7 @@ module.exports = {
         fs.writeFile('./hiddenJsonFiles/birthdayDates.json', JSON.stringify(birthdayJSON, null, 4), async (err) => {
             if (err)
             {
+                await buttonInteraction.update({ content: `⚠️ Oops! An error occurred while attempting to set your Birthday...`, components: [] });
                 return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/birthdayDates.json: `);
             }
         });

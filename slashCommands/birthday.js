@@ -6,6 +6,7 @@ const ErrorModule = require('../modules/errorLog.js');
 
 const Month31Days = [ 0, 2, 4, 6, 7, 9, 11 ];
 const Month30Days = [ 3, 5, 8, 10 ];
+const IntToMonths = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 
 
 module.exports = {
@@ -13,7 +14,7 @@ module.exports = {
     description: `Main Birthday Slash Command`,
     
     // Cooldown is in seconds
-    cooldown: 60,
+    cooldown: 180,
 
     // Uncomment for making the command only usable in DMs with the Bot
     //    - DO NOT have both this AND "guildOnly" uncommented, only one or neither
@@ -103,8 +104,39 @@ module.exports = {
         // Birthday Remove Sub-Command
         else if ( subCommandName === "remove" )
         {
-            return await slashInteraction.reply({ content: `Birthday Remove Slash Sub-Command test successful!` });
+            return await this.removeBirthday(slashInteraction);
         }
+
+    },
+
+
+
+
+    /**
+     * Method for removing Birthday
+     * 
+     * @param {Discord.CommandInteraction} slashInteraction 
+     */
+    async removeBirthday(slashInteraction) {
+
+        // Just in case it takes longer than 3 seconds to do stuff, Defer the response to buy more time (up to 15 minutes)
+        await slashInteraction.defer({ ephemeral: true });
+
+        let birthdayJSON = require('../hiddenJsonFiles/birthdayDates.json');
+
+        // remove from JSON, then save to file
+        delete birthdayJSON[slashInteraction.user.id];
+
+        // Write to JSON file
+        fs.writeFile('./hiddenJsonFiles/birthdayDates.json', JSON.stringify(birthdayJSON, null, 4), async (err) => {
+            if (err)
+            {
+                await slashInteraction.editReply({ content: `⚠️ Oops! An error occurred while attempting to remove your Birthday...`, ephemeral: true });
+                return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/birthdayDates.json: `);
+            }
+        });
+
+        return await slashInteraction.editReply({ content: `✅ Successfully removed your Birthday`, ephemeral: true });
 
     },
 
@@ -121,7 +153,6 @@ module.exports = {
         // Just in case it takes longer than 3 seconds to do stuff, Defer the response to buy more time (up to 15 minutes)
         await slashInteraction.defer({ ephemeral: true });
 
-        // Check if the User doesn't already exist in the JSON
         let birthdayJSON = require('../hiddenJsonFiles/birthdayDates.json');
 
         let monthValue = parseInt(slashInteraction.options.get("month").value); // 0 for Jan, 11 for Dec
@@ -158,23 +189,24 @@ module.exports = {
         }
         else
         {
-            return await slashInteraction.editReply({ content: `Month: ${monthValue}, Date: ${dateValue}`, ephemeral: true });
+            birthdayJSON[slashInteraction.user.id] = {
+                userID: slashInteraction.user.id,
+                birthMonth: monthValue,
+                birthDate: dateValue
+            };
+    
+    
+            // Write to JSON file
+            fs.writeFile('./hiddenJsonFiles/birthdayDates.json', JSON.stringify(birthdayJSON, null, 4), async (err) => {
+                if (err)
+                {
+                    await slashInteraction.editReply({ content: `⚠️ Oops! An error occurred while attempting to set your Birthday...`, ephemeral: true });
+                    return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/birthdayDates.json: `);
+                }
+            });
+
+            return await slashInteraction.editReply({ content: `✅ Successfully set your Birthday as ${IntToMonths[monthValue]} ${dateValue}${dateValue === 1 ? "st" : dateValue === 2 ? "nd" : dateValue === 3 ? "rd" : "th"}`, ephemeral: true });
         }
-
-        /*birthdayJSON[slashInteraction.user.id] = {
-            userID: slashInteraction.user.id,
-            birthMonth: monthValue,
-            birthDate: dateValue
-        };
-
-
-        // Write to JSON file
-        fs.writeFile('./hiddenJsonFiles/birthdayDates.json', JSON.stringify(birthdayJSON, null, 4), async (err) => {
-            if (err)
-            {
-                return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/birthdayDates.json: `);
-            }
-        });*/
 
     }
 }
