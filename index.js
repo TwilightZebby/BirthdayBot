@@ -383,6 +383,55 @@ client.on('interactionCreate', async (interaction) => {
 
 
 
+/******************************************************************************* */
+// MEMBER LEFT GUILD EVENT
+
+client.on('guildMemberRemove', async (member) => {
+
+    const birthdayDatesJSON = require('./hiddenJsonFiles/birthdayDates.json');
+    
+    // Check if they are in the JSON, if yes, remove
+    if ( birthdayDatesJSON[`${member.user.id}`] )
+    {
+        delete birthdayDatesJSON[`${member.user.id}`];
+        
+        fs.writeFile('./hiddenJsonFiles/birthdayDates.json', JSON.stringify(birthdayDatesJSON, null, 4), async (err) => {
+            if (err)
+            {
+                return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/birthdayDates.json: `);
+            }
+        });
+    }
+
+    return;
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /******************************************************************************* */
 
