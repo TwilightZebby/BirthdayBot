@@ -5,7 +5,7 @@ const Discord = require("discord.js");
 
 // GLOBAL STUFF
 const { client } = require("./constants.js");
-const { CONFIG, TOKEN, ErrorLogChannelID, ErrorLogGuildID } = require("./config.js");
+const { CONFIG, TOKEN, ErrorLogChannelID, ErrorLogGuildID, Dr1fterXGuildID, TestBirthdayRoleID, Dr1fterXBirthdayRoleID, TestSocialChannelID, Dr1fterXSocialChannelID } = require("./config.js");
 
 
 // MAPS / COLLECTIONS
@@ -58,6 +58,96 @@ client.once('ready', () => {
     }, 1.08e+7);
 
     console.log("I am ready!");
+
+
+    // Timer loop thingy for giving and revoking of the Birthday Role
+    setInterval(async () => {
+
+        const dateCheckJSON = require('./hiddenJsonFiles/dateCheck.json');
+        const birthdayDatesJSON = require('./hiddenJsonFiles/birthdayDates.json');
+
+        let timeNow = new Date(Date.now());
+        let nowMonth = timeNow.getMonth();
+        let nowDate = timeNow.getDate();
+
+        if ( dateCheckJSON["lastCheckedDate"] === nowDate )
+        {
+            // It's still the same day, do nothing
+            delete timeNow, nowMonth, nowDate;
+            return;
+        }
+        else
+        {
+            // *****New day, sort out roles
+            let birthdayStore = Object.values(birthdayDatesJSON);
+            let guild = await client.guilds.fetch({ guild: ErrorLogGuildID });
+            /**
+             * @type {Discord.TextChannel}
+             */
+            let socialChannel = await guild.channels.fetch(TestSocialChannelID);
+
+            // First, check to see if there were any for yesterday, and revoke Birthday Role from them
+            let yesterdayBirthdays = birthdayStore.filter(birthObj => birthObj.birthMonth === dateCheckJSON["lastCheckedMonth"] && birthObj.birthDate === dateCheckJSON["lastCheckedDate"]);
+            if ( !yesterdayBirthdays.length || yesterdayBirthdays.length === 0 )
+            {
+                // There are none stored for yesterday, so move on to today!
+            }
+            else
+            {
+                // There are some stored for yesterday, so revoke Birthday Role!
+                for ( const yesterBirth of yesterdayBirthdays )
+                {
+                    let birthMember = await guild.members.fetch(yesterBirth.userID);
+                    await birthMember.roles.remove(TestBirthdayRoleID);
+                }
+            }
+
+
+
+            // Check for today
+            let todayBirthdays = birthdayStore.filter(birthObj => birthObj.birthMonth === nowMonth && birthObj.birthDate === nowDate);
+            if ( !todayBirthdays.length || todayBirthdays.length === 0 )
+            {
+                // There are none stored for today, so move on!
+            }
+            else
+            {
+                for ( const todayBirth of todayBirthdays )
+                {
+                    let birthMember = await guild.members.fetch(todayBirth.userID);
+
+                    let embed = new Discord.MessageEmbed().setColor('RED')
+                    .setTitle(`BIRTHDAY TIME!`)
+                    .setDescription(`Happy Birthday **\<\@${birthMember.user.id}\>** (**${birthMember.user.username}#${birthMember.user.discriminator}**)!\nYou have just been given the \<\@\&${TestBirthdayRoleID}\> role for the next 24 hours!\n\nEveryone <:ayaya:545260084012253186> in chat!`)
+                    .setThumbnail("https://media0.giphy.com/media/E5jCN5tsN21Ec/giphy.gif")
+                    .setTimestamp(timeNow);
+                    
+                    await birthMember.roles.add(TestBirthdayRoleID)
+                    .then(async () => {
+                        await socialChannel.send({ embeds: [embed] });
+                    });
+
+                    delete embed;
+                }
+            }
+
+
+
+            // FINALLY, change the "lastChecked" stuff to be today, ready for tomorrow
+            dateCheckJSON["lastCheckedDate"] = nowDate;
+            dateCheckJSON["lastCheckedMonth"] = nowMonth;
+
+            fs.writeFile('./hiddenJsonFiles/dateCheck.json', JSON.stringify(dateCheckJSON, null, 4), async (err) => {
+                if (err)
+                {
+                    return await ErrorModule.LogCustom(err, `Attempted writing to ./hiddenJsonFiles/dateCheck.json: `);
+                }
+            });
+
+            return;
+        }
+
+    }, 300000);
 
 });
 
