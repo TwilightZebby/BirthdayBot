@@ -106,6 +106,7 @@ client.once('ready', () => {
 
             // Check for today
             let todayBirthdays = birthdayStore.filter(birthObj => birthObj.birthMonth === nowMonth && birthObj.birthDate === nowDate);
+
             if ( !todayBirthdays.length || todayBirthdays.length === 0 )
             {
                 // There are none stored for today, so move on!
@@ -130,6 +131,46 @@ client.once('ready', () => {
                     delete embed;
                 }
             }
+
+
+
+
+
+            // Let's not forget about Feb 29th!
+            if ( (timeNow.getFullYear() % 4 !== 0) && (nowMonth === 1 && nowDate === 28) )
+            {
+                let feb29Birthdays = birthdayStore.filter(birthObj => birthObj.birthMonth === 1 && birthObj.birthDate === 29);
+
+                if ( !feb29Birthdays.length || feb29Birthdays.length === 0 )
+                {
+                    // There are none stored for Feb29, so move on!
+                }
+                else
+                {
+                    for ( const todayBirth of feb29Birthdays )
+                    {
+                        let birthMember = await guild.members.fetch(todayBirth.userID);
+
+                        let embed = new Discord.MessageEmbed().setColor('RED')
+                        .setTitle(`BIRTHDAY TIME!!`)
+                        .setDescription(`Happy Birthday **\<\@${birthMember.user.id}\>** (**${birthMember.user.username}#${birthMember.user.discriminator}**)!\nYou have just been given the \<\@\&${TestBirthdayRoleID}\> role for the next 24 hours!\n\nEveryone <:ayaya:545260084012253186> in chat!`)
+                        .setThumbnail("https://media0.giphy.com/media/E5jCN5tsN21Ec/giphy.gif")
+                        .setTimestamp(timeNow);
+                    
+                        await birthMember.roles.add(TestBirthdayRoleID)
+                        .then(async () => {
+                            await socialChannel.send({ embeds: [embed] });
+                        });
+
+                        delete embed;
+                    }
+                }
+
+            }
+
+
+
+
 
 
 
