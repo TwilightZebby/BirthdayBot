@@ -24,7 +24,7 @@
   "homepage": "https://github.com/TwilightZebby/BirthdayBot#readme",
   "dependencies": {
     "bufferutil": "^4.0.3",
-    "discord.js": "^13.0.0-dev.t1627949059.35fa3b3",
+    "discord.js": "^13.0.0-dev.t1628208261.a56ba09",
     "erlpack": "github:discord/erlpack",
     "utf-8-validate": "^5.0.5",
     "zlib-sync": "^0.1.7"
