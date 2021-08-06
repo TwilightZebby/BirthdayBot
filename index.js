@@ -103,6 +103,13 @@ client.once('ready', () => {
             }
 
 
+            // Embed Stuff so we can merge all Birthdays into the same Embed to prevent spamming chat or hitting rate limit haha
+            let embed = new Discord.MessageEmbed().setColor('RED')
+            .setTitle(`BIRTHDAY TIME!`)
+            .setThumbnail("https://media0.giphy.com/media/E5jCN5tsN21Ec/giphy.gif")
+            .setTimestamp(timeNow);
+
+            let memberStrings = [];
 
             // Check for today
             let todayBirthdays = birthdayStore.filter(birthObj => birthObj.birthMonth === nowMonth && birthObj.birthDate === nowDate);
@@ -116,19 +123,8 @@ client.once('ready', () => {
                 for ( const todayBirth of todayBirthdays )
                 {
                     let birthMember = await guild.members.fetch(todayBirth.userID);
-
-                    let embed = new Discord.MessageEmbed().setColor('RED')
-                    .setTitle(`BIRTHDAY TIME!`)
-                    .setDescription(`Happy Birthday **\<\@${birthMember.user.id}\>** (**${birthMember.user.username}#${birthMember.user.discriminator}**)!\nYou have just been given the \<\@\&${TestBirthdayRoleID}\> role for the next 24 hours!\n\nEveryone <:ayaya:545260084012253186> in chat!`)
-                    .setThumbnail("https://media0.giphy.com/media/E5jCN5tsN21Ec/giphy.gif")
-                    .setTimestamp(timeNow);
-                    
-                    await birthMember.roles.add(TestBirthdayRoleID)
-                    .then(async () => {
-                        await socialChannel.send({ embeds: [embed] });
-                    });
-
-                    delete embed;
+                    memberStrings.push(`**\<\@${birthMember.user.id}\>**`);
+                    await birthMember.roles.add(TestBirthdayRoleID);
                 }
             }
 
@@ -150,23 +146,21 @@ client.once('ready', () => {
                     for ( const todayBirth of feb29Birthdays )
                     {
                         let birthMember = await guild.members.fetch(todayBirth.userID);
-
-                        let embed = new Discord.MessageEmbed().setColor('RED')
-                        .setTitle(`BIRTHDAY TIME!!`)
-                        .setDescription(`Happy Birthday **\<\@${birthMember.user.id}\>** (**${birthMember.user.username}#${birthMember.user.discriminator}**)!\nYou have just been given the \<\@\&${TestBirthdayRoleID}\> role for the next 24 hours!\n\nEveryone <:ayaya:545260084012253186> in chat!`)
-                        .setThumbnail("https://media0.giphy.com/media/E5jCN5tsN21Ec/giphy.gif")
-                        .setTimestamp(timeNow);
-                    
-                        await birthMember.roles.add(TestBirthdayRoleID)
-                        .then(async () => {
-                            await socialChannel.send({ embeds: [embed] });
-                        });
-
-                        delete embed;
+                        memberStrings.push(`**\<\@${birthMember.user.id}\>**`);
+                        await birthMember.roles.add(TestBirthdayRoleID);
                     }
                 }
 
             }
+
+
+
+
+            // Send Birthday Message!
+            embed.setDescription(`Happy Birthday ${memberStrings.join(', ')}!\n\nYou have just been given the \<\@\&${TestBirthdayRoleID}\> role for the next 24 hours!\n\nEveryone <:ayaya:545260084012253186> in chat!`);
+            await socialChannel.send({ embeds: [embed] });
+
+            delete embed, memberStrings;
 
 
 
