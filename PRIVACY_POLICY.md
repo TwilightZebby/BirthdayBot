@@ -14,4 +14,4 @@ The data stored for a User (as listed above) is deleted should one of two condit
 - Either the User in question runs the `/birthday remove` command, explicitly telling the Bot to delete their data,
 - OR the User leaves Dr1fterX's Discord Server, in which the Bot will remove their data, should they have any stored.
 
-Additionally, the Birthday Bot's source code is open-sourced, should one wish to see for themselves how and when data is handled by the Bot.
+Additionally, the Birthday Bot's [source code is open-sourced](https://github.com/TwilightZebby/BirthdayBot), should one wish to see for themselves how and when data is handled by the Bot.
