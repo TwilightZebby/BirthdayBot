@@ -120,7 +120,7 @@ module.exports = {
     async removeBirthday(slashInteraction) {
 
         // Just in case it takes longer than 3 seconds to do stuff, Defer the response to buy more time (up to 15 minutes)
-        await slashInteraction.defer({ ephemeral: true });
+        await slashInteraction.deferReply({ ephemeral: true });
 
         let birthdayJSON = require('../hiddenJsonFiles/birthdayDates.json');
 
@@ -157,7 +157,7 @@ module.exports = {
     async setBirthday(slashInteraction) {
 
         // Just in case it takes longer than 3 seconds to do stuff, Defer the response to buy more time (up to 15 minutes)
-        await slashInteraction.defer({ ephemeral: true });
+        await slashInteraction.deferReply({ ephemeral: true });
 
         let birthdayJSON = require('../hiddenJsonFiles/birthdayDates.json');
 

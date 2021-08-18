@@ -183,6 +183,8 @@ client.once('ready', () => {
         }
 
     }, 300000);
+    // 300000 = 5 mins, for testing
+    // 2.16e+7 = 6 hours, for production
 
 });
 
